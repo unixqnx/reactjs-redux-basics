@@ -30,16 +30,16 @@
 
 // render(<App />, window.document.getElementById('app'));
 
-import { createStore } from "redux";
-
-const initialState = {
-    result: 1,
-    lastValues: [],
-    username:"Dmitriy"
-};
+import { createStore, combineReducers } from "redux";
 
 
-const reduser = (state = initialState, action) => {
+const mathReduser = (
+    state = {
+        result: 1,
+        lastValues: []
+    }, 
+    action
+) => {
     switch(action.type){
         case "ADD":
             state = {
@@ -59,8 +59,32 @@ const reduser = (state = initialState, action) => {
     return state;
 };
 
-// const store = createStore(reduser, 1);
-const store = createStore(reduser);
+
+const userReduser = (
+    state = {
+        name: "Dmitriy",
+        age: 33
+    }, 
+    action
+) => {
+    switch(action.type){
+        case "SET_NAME":
+            state = {
+                ...state,
+                name: action.payload,
+            }
+        break;
+        case "SET_AGE":
+            state = {
+                ...state,
+                age: action.payload
+            }
+        break;
+    }
+    return state;
+};
+
+const store = createStore(combineReducers({ mathReduser, userReduser }));
 
 store.subscribe(()=>{
     console.log("Store updated", store.getState());
@@ -80,4 +104,9 @@ store.dispatch({
 store.dispatch({
     type:"SUBTRACT",
     payload:80
+});
+
+store.dispatch({
+    type:"SET_AGE",
+    payload:34
 });
