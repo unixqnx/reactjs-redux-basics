@@ -30,8 +30,8 @@
 
 // render(<App />, window.document.getElementById('app'));
 
-import { createStore, combineReducers } from "redux";
-
+import { createStore, combineReducers, applyMiddleware } from "redux";
+import { createLogger } from "redux-logger";
 
 const mathReduser = (
     state = {
@@ -84,7 +84,16 @@ const userReduser = (
     return state;
 };
 
-const store = createStore(combineReducers({ mathReduser, userReduser }));
+const myLogger = (store) => (next) => (action) =>{
+    console.log("Logged Action: ", action);
+    next(action);
+};
+
+const store = createStore(
+    combineReducers({ mathReduser, userReduser }), 
+    {}, 
+    applyMiddleware(myLogger, createLogger())
+);
 
 store.subscribe(()=>{
     console.log("Store updated", store.getState());
