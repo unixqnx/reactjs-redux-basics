@@ -1,39 +1,11 @@
-// import React from "react";
-// import {render} from "react-dom";
-
-// import { User } from './components/User';
-// import { Main } from './components/Main';
-
-// class App extends React.Component {
-//     constructor() {
-//         super();
-//         this.state = {
-//             username: "Max"
-//         };
-//     }
-
-//     changeUsername(newName) {
-//         this.setState({
-//             username: newName
-//         });
-//     }
-
-//     render() {
-//         return (
-//             <div className="container">
-//                 <Main changeUsername={this.changeUsername.bind(this)}/>
-//                 <User username={this.state.username}/>
-//             </div>
-//         );
-//     }
-// }
-
-// render(<App />, window.document.getElementById('app'));
-
+import { render } from "react-dom";
+import React from "react";
 import { createStore, combineReducers, applyMiddleware } from "redux";
 import { createLogger } from "redux-logger";
+import { Provider } from "react-redux"
+import App from "./components/App";
 
-const mathReduser = (
+const mathReducer = (
     state = {
         result: 1,
         lastValues: []
@@ -60,7 +32,7 @@ const mathReduser = (
 };
 
 
-const userReduser = (
+const userReducer = (
     state = {
         name: "Dmitriy",
         age: 33
@@ -72,13 +44,13 @@ const userReduser = (
             state = {
                 ...state,
                 name: action.payload,
-            }
+            };
         break;
         case "SET_AGE":
             state = {
                 ...state,
                 age: action.payload
-            }
+            };
         break;
     }
     return state;
@@ -89,8 +61,9 @@ const myLogger = (store) => (next) => (action) =>{
     next(action);
 };
 
+
 const store = createStore(
-    combineReducers({ mathReduser, userReduser }), 
+    combineReducers({ math: mathReducer, user: userReducer }), 
     {}, 
     applyMiddleware(myLogger, createLogger())
 );
@@ -99,23 +72,8 @@ store.subscribe(()=>{
     console.log("Store updated", store.getState());
 });
 
-
-store.dispatch({
-    type:"ADD",
-    payload:100
-});
-
-store.dispatch({
-    type:"ADD",
-    payload:22
-});
-
-store.dispatch({
-    type:"SUBTRACT",
-    payload:80
-});
-
-store.dispatch({
-    type:"SET_AGE",
-    payload:34
-});
+render(<Provider store={store}>
+            <App/>
+        </Provider>, 
+        window.document.getElementById('app')
+    );
